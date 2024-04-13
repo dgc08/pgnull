@@ -1,5 +1,3 @@
-import pygame.locals
-
 glob_singleton = {}
 
 from pgnull.Keyboard import Keyboard

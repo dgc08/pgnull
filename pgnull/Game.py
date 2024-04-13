@@ -1,15 +1,14 @@
-from copy import deepcopy
-
 import pygame
 
 from pgnull.Clock import Clock
+from pgnull.Keyboard import Keyboard
 from pgnull.Screen import Screen
 
-from pgnull.utils import *
+import pgnull.utils
 
 class Game:
     def __init__(self):
-        glob_singleton["game"] = self
+        pgnull.utils.glob_singleton["game"] = self
         pygame.init()
         self.clock = Clock()
         self.keyboard = Keyboard()
@@ -19,7 +18,7 @@ class Game:
     def open_screen(self, WIDTH, HEIGHT, caption="pgnull game"):
         self.screen = Screen(WIDTH, HEIGHT, caption)
 
-    def run_game(self, update_function = keep_open, on_close = keep_open, update_fps = 60):
+    def run_game(self, update_function = pgnull.utils.keep_open, on_close = pgnull.utils.keep_open, update_fps = 60):
         self.__running = True
         score = 0
         while self.__running:
@@ -35,7 +34,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.quit()
 
-            update_function(Game_Context(events, self.keyboard))
+            update_function(pgnull.utils.Game_Context(events, self.keyboard))
 
             pygame.display.update()
             self.clock.tick(update_fps)
