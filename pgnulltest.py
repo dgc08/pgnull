@@ -12,9 +12,13 @@ fox = pgnull.Actor("fox")
 fox.pos = 100, 100
 
 coin = pgnull.Actor("coin")
-coin.pos = 200, 200
 
 score = 0
+game_over = False
+
+def time_up():
+    global game_over
+    game_over = True
 
 def place_coin():
     coin.x = randint(20, (WIDTH-20))
@@ -27,9 +31,14 @@ def draw():
     coin.draw()
     fox.draw()
 
+    if game_over:
+        game.screen.fill("pink")
+        game.screen.draw_text("Endstand: " + str(score), topleft=(10, 10), fontsize=60)
+        game.screen.draw_text("Noch mal spielen? (j/n)", topleft=(10, 100), fontsize=40)
 
 def update(context):
     global score
+    global game_over
 
     if context.keyboard.left:
         fox.x = fox.x - 2
@@ -45,9 +54,20 @@ def update(context):
         score += 10
         place_coin()
 
-    if context.keyboard.j:
+    if game_over and context.keyboard.j:
+        game_over = False
+        score = 0
+
+    if game_over and context.keyboard.n:
         game.quit()
 
     draw()
+
+def on_exit():
+    print("i am closnngig")
+
+place_coin()
+game.clock.schedule(time_up, 15.0)
+game.register_event("on_close", on_exit)
 
 game.run_game(update)

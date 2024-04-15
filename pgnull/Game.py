@@ -12,16 +12,27 @@ class Game:
         pygame.init()
         self.clock = Clock()
         self.keyboard = Keyboard()
+        self.event_runner = pgnull.utils.Game_Events()
 
         self.__running = False
 
     def open_screen(self, WIDTH, HEIGHT, caption="pgnull game"):
         self.screen = Screen(WIDTH, HEIGHT, caption)
 
-    def run_game(self, update_function = pgnull.utils.keep_open, on_close = pgnull.utils.keep_open, update_fps = 60):
+    def run_game(self, run_object=None, update_fps=60, on_close=None):
+        if callable(run_object):
+            self.event_runner.on_update = run_object
+        if callable(on_close):
+            self.event_runner.on_close = on_close
+        if type(run_object) == pgnull.utils.Game_Events:
+            self.event_runner = run_object
+
+        self.__run_game_loop(update_fps)
+
+    def __run_game_loop(self, update_fps):
         self.__running = True
-        score = 0
         while self.__running:
+            self.event_runner.on_iteration_start()
             events = pygame.event.get()
 
             for event in events:
@@ -33,14 +44,25 @@ class Game:
                     self.keyboard.set_key(key, False)
                 if event.type == pygame.QUIT:
                     self.quit()
+                self.clock.check_schedule(event.type)
 
-            update_function(pgnull.utils.Game_Context(events, self.keyboard))
+            self.event_runner.on_update(pgnull.utils.Game_Context(events, self.keyboard))
 
+            self.event_runner.on_draw()
             pygame.display.update()
             self.clock.tick(update_fps)
 
-        on_close()
+        self.event_runner.on_close()
         self.__quit()
+
+    def register_event(self, event: str, event_runnable):
+        if not callable(event_runnable):
+            raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
+
+        if event == "on_close":
+            self.event_runner.on_close = event_runnable
+        elif event == "on_iteration_start":
+            self.event_runner.on_iteration_start = event_runnable
 
     def __quit(self):
         pygame.quit()

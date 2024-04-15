@@ -13,4 +13,4 @@ class Screen:
     def draw_text(self, text , topleft, font=None, fontsize = 32, color=Colors.BLACK, font_kwargs={}, render_kwargs={}):
         font = pygame.font.Font(font, fontsize, **font_kwargs)
         text_obj = font.render(text, True, color, **render_kwargs)
-        self.blit(text_obj, (10, 10))
+        self.blit(text_obj, topleft)
