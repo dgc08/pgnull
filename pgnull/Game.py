@@ -22,10 +22,13 @@ class Game:
     def run_game(self, run_object=None, update_fps=60, on_close=None):
         if callable(run_object):
             self.event_runner.on_update = run_object
+        elif type(run_object) == pgnull.utils.Game_Events:
+            self.event_runner = run_object
+        else:
+            raise TypeError("run_object isn't callable or an instance of Game_Events (It can either be a reference to an update function or a pgnull.Game_Events with all the relevant functions implemented)")
+
         if callable(on_close):
             self.event_runner.on_close = on_close
-        if type(run_object) == pgnull.utils.Game_Events:
-            self.event_runner = run_object
 
         self.__run_game_loop(update_fps)
 
@@ -39,9 +42,13 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     key = pygame.key.name(event.key).lower()
                     self.keyboard.set_key(key, True)
+
+                    self.event_runner.on_key_down(event.key)
                 if event.type == pygame.KEYUP:
                     key = pygame.key.name(event.key).lower()
                     self.keyboard.set_key(key, False)
+
+                    self.event_runner.on_key_up(event.key)
                 if event.type == pygame.QUIT:
                     self.quit()
                 self.clock.check_schedule(event.type)
