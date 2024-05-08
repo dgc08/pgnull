@@ -44,12 +44,20 @@ class Game:
                     self.keyboard.set_key(key, True)
 
                     self.event_runner.on_key_down(event.key)
-                if event.type == pygame.KEYUP:
+                elif event.type == pygame.KEYUP:
                     key = pygame.key.name(event.key).lower()
                     self.keyboard.set_key(key, False)
 
                     self.event_runner.on_key_up(event.key)
-                if event.type == pygame.QUIT:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    self.event_runner.on_mouse_down(mouse_pos, event.button)
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    mouse_pos = pygame.mouse.get_pos()
+                    self.event_runner.on_mouse_up(mouse_pos, event.button)
+                elif event.type == pygame.MOUSEMOTION:
+                    self.event_runner.on_mouse_move(event.pos, event.rel, event.buttons)
+                elif event.type == pygame.QUIT:
                     self.quit()
                 self.clock.check_schedule(event.type)
 
@@ -66,10 +74,8 @@ class Game:
         if not callable(event_runnable):
             raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
 
-        if event == "on_close":
-            self.event_runner.on_close = event_runnable
-        elif event == "on_iteration_start":
-            self.event_runner.on_iteration_start = event_runnable
+        self.event_runner.__setattr__(event, event_runnable)
+        return
 
     def __quit(self):
         pygame.quit()

@@ -52,7 +52,7 @@ class Game_Events:
         pass
 
     @staticmethod
-    def on_mouse_move(pos, rel, button):
+    def on_mouse_move(pos, rel, buttons):
         pass
 
     @staticmethod
