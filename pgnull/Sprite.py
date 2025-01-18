@@ -1,18 +1,19 @@
 import pygame.image
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite as pygame_sprite
 
-from pgnull.utils import glob_singleton
+from .utils import glob_singleton
 
-class Actor(Sprite):
-    def __init__(self, name):
-        super(Actor, self).__init__()
+class Sprite(pygame_sprite):
+    def __init__(self, name, image_path=None, scale=(1,1), angle=0):
+        super(Sprite, self).__init__()
         self.pygame_obj = self
-        path = "images/" + name + ".png"
-        self.original_image = pygame.image.load(path)
+        if not image_path:
+            image_path = "images/" + name + ".png"
+        self.original_image = pygame.image.load(image_path)
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.scale(1, 1)
-        self.rotate(45)
+        self.scale(*scale)
+        self.rotate(angle)
 
     @property
     def pos(self):

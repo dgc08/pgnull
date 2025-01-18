@@ -1,18 +1,18 @@
 import pygame
 
-from pgnull.Clock import Clock
-from pgnull.Keyboard import Keyboard
-from pgnull.Screen import Screen
+from .Clock import Clock
+from .Keyboard import Keyboard
+from .Screen import Screen
 
-import pgnull.utils
+from . import utils
 
 class Game:
     def __init__(self):
-        pgnull.utils.glob_singleton["game"] = self
+        utils.glob_singleton["game"] = self
         pygame.init()
         self.clock = Clock()
         self.keyboard = Keyboard()
-        self.event_runner = pgnull.utils.Game_Events()
+        self.event_runner = utils.Game_Events()
 
         self.__running = False
 
@@ -22,7 +22,7 @@ class Game:
     def run_game(self, run_object=None, update_fps=60, on_close=None):
         if callable(run_object):
             self.event_runner.on_update = run_object
-        elif type(run_object) == pgnull.utils.Game_Events:
+        elif type(run_object) == utils.Game_Events:
             self.event_runner = run_object
         else:
             raise TypeError("run_object isn't callable or an instance of Game_Events (It can either be a reference to an update function or a pgnull.Game_Events with all the relevant functions implemented)")
@@ -61,7 +61,7 @@ class Game:
                     self.quit()
                 self.clock.check_schedule(event.type)
 
-            self.event_runner.on_update(pgnull.utils.Game_Context(events, self.keyboard))
+            self.event_runner.on_update(utils.Game_Context(events, self.keyboard))
 
             self.event_runner.on_draw()
             pygame.display.update()

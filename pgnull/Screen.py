@@ -1,6 +1,6 @@
 from pygame import display
 import pygame.font
-from pgnull.utils import Colors
+from .utils import Colors
 
 from pygame import draw
 

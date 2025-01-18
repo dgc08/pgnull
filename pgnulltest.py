@@ -8,10 +8,10 @@ HEIGHT = 400
 
 game.open_screen(WIDTH, HEIGHT)
 
-fox = pgnull.Actor("fox")
+fox = pgnull.Sprite("fox")
 fox.pos = 100, 100
 
-coin = pgnull.Actor("coin")
+coin = pgnull.Sprite("coin")
 
 score = 0
 game_over = False

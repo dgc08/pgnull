@@ -1,6 +1,6 @@
 glob_singleton = {}
 
-from pgnull.Keyboard import Keyboard
+from .Keyboard import Keyboard
 
 keys = Keyboard.get_key_list()
 
