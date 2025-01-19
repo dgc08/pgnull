@@ -2,16 +2,20 @@ import pygame.image
 from pygame.sprite import Sprite as pygame_sprite
 from pygame.math import *
 
-from .utils import glob_singleton
+from .Game import Game
+from .GameObject import GameObject
 
-class Sprite(pygame_sprite):
+class Sprite(GameObject, pygame_sprite):
     def __init__(self, image_path, pos=None, scale=(1,1), angle=0):
         super(Sprite, self).__init__()
+
         self.pygame_obj = self
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image
         self.rect = self.image.get_rect()
 
+        scale = Vector2(scale)
+        
         self.__scale_val = Vector2(scale)
         self.__angle = angle
         self.scale = scale
@@ -19,11 +23,13 @@ class Sprite(pygame_sprite):
 
         if pos:
             self.pos = pos
-            print("set to ", pos)
 
     @property
     def pos(self):
         return self.rect.x, self.rect.y
+    @pos.setter
+    def pos(self, value):
+        self.rect.x, self.rect.y = value
 
     @property
     def x(self):
@@ -39,9 +45,12 @@ class Sprite(pygame_sprite):
     def y(self, value):
         self.rect.y = value
 
-    @pos.setter
-    def pos(self, value):
-        self.rect.x, self.rect.y = value
+    @property
+    def height(self):
+        return self.rect.height
+    @property
+    def width(self):
+        return self.rect.width
 
     def __rescale_and_rotate(self):
         #prev_img = self.image
@@ -57,8 +66,6 @@ class Sprite(pygame_sprite):
         )
         self.rect = self.image.get_rect(center=self.rect.center)
 
-        #self.image = pygame.transform.scale(self.image, (new_width, new_height))
-        #self.rect = self.image.get_rect(center=self.rect.center)
         self.colliderect = self.rect.colliderect
 
     @property
@@ -80,5 +87,4 @@ class Sprite(pygame_sprite):
 
 
     def draw(self):
-        glob_singleton["game"].screen.blit(self.image, self.rect)
-
+        Game.get_game().screen.blit(self.image, self.rect)

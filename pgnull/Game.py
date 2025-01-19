@@ -7,12 +7,22 @@ from .Screen import Screen
 from . import utils
 
 class Game:
+    @staticmethod
+    def get_game():
+        if utils.glob_singleton.get("game"):
+            return utils.glob_singleton["game"]
+        else:
+            return Game()
+
     def __init__(self):
         utils.glob_singleton["game"] = self
         pygame.init()
         self.clock = Clock()
         self.keyboard = Keyboard()
         self.event_runner = utils.Game_Events()
+
+        self.on_updates = []
+        self.on_draws = []
 
         self.__running = False
 
@@ -24,6 +34,8 @@ class Game:
             self.event_runner.on_update = run_object
         elif type(run_object) == utils.Game_Events:
             self.event_runner = run_object
+        elif self.event_runner.on_update:
+            pass
         else:
             raise TypeError("run_object isn't callable or an instance of Game_Events (It can either be a reference to an update function or a pgnull.Game_Events with all the relevant functions implemented)")
 
@@ -61,9 +73,15 @@ class Game:
                     self.quit()
                 self.clock.check_schedule(event.type)
 
-            self.event_runner.on_update(utils.Game_Context(events, self.keyboard))
+            ctx = utils.Game_Context(events, self.keyboard)
+            self.event_runner.on_update(ctx)
+            for f in self.on_updates:
+                f(ctx)
 
             self.event_runner.on_draw()
+            for f in self.on_draws:
+                f()
+
             pygame.display.update()
             self.clock.tick(update_fps)
 
@@ -74,8 +92,19 @@ class Game:
         if not callable(event_runnable):
             raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
 
+        if not hasattr(self.event_runner, event):
+            event = "on_"+event
+        if not hasattr(self.event_runner, event):
+            raise TypeError("No Event named " + event)
+
         self.event_runner.__setattr__(event, event_runnable)
         return
+
+    def event(self, event_name: str):
+        def decorator(func):
+            self.register_event(event_name, func)
+            return func
+        return decorator
 
     def __quit(self):
         pygame.quit()
