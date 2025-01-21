@@ -14,9 +14,12 @@ class Game:
         else:
             return Game()
 
-    def __init__(self):
+    def __init__(self, old_game=None):
         utils.glob_singleton["game"] = self
-        pygame.init()
+        if not old_game:
+            pygame.init()
+        else:
+            self.screen = old_game.screen
         self.clock = Clock()
         self.keyboard = Keyboard()
         self.event_runner = utils.Game_Events()
@@ -70,7 +73,8 @@ class Game:
                 elif event.type == pygame.MOUSEMOTION:
                     self.event_runner.on_mouse_move(event.pos, event.rel, event.buttons)
                 elif event.type == pygame.QUIT:
-                    self.quit()
+                    self.event_runner.on_close()
+                    self.close()
                 self.clock.check_schedule(event.type)
 
             ctx = utils.Game_Context(events, self.keyboard)
@@ -86,8 +90,7 @@ class Game:
             self.clock.tick(update_fps)
 
         self.event_runner.on_close()
-        self.__quit()
-
+        
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):
             raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
@@ -106,7 +109,7 @@ class Game:
             return func
         return decorator
 
-    def __quit(self):
+    def close(self):
         pygame.quit()
         exit()
 
