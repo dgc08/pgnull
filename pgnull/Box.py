@@ -3,6 +3,10 @@
 from pygame.rect import Rect
 from pygame.math import Vector2
 from pygame import draw
+from pygame import MOUSEBUTTONDOWN
+from pygame import mouse
+
+#import pygame
 
 from .Game import Game
 from .GameObject import GameObject
@@ -38,9 +42,27 @@ class TextBox(Box):
 
     def draw(self):
         super().draw()
-
+        
         screen = Game.get_game().screen
         
         text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
         text_position = (self.left + (self.width - text_width) // 2, self.top + (self.height - text_height) // 2)
         screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
+
+
+class Button(TextBox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def update(self, ctx):
+        for event in ctx.events:
+            if event.type == MOUSEBUTTONDOWN:
+                pos = mouse.get_pos()
+                button = event.button
+
+                if button == 1 and self.collidepoint(pos):
+                    self.on_click()
+
+    @staticmethod
+    def on_click():
+        print("generic on click")
