@@ -82,9 +82,10 @@ class Game:
             for f in self.on_updates:
                 f(ctx)
 
-            self.event_runner.on_draw()
+            self.event_runner.on_predraw()
             for f in self.on_draws:
                 f()
+            self.event_runner.on_draw()
 
             pygame.display.update()
             self.clock.tick(update_fps)

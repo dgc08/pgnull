@@ -19,9 +19,6 @@ class Screen:
         text_obj = font.render(text, True, color, **render_kwargs)
         self.blit(text_obj, topleft)
 
-    def draw_rect(self, rect, color):
-        draw.rect(self.pygame_obj, color, rect)
-
     def get_text_size(self, text, font=None, fontsize=32, font_kwargs={}):
         font = pygame.font.Font(font, fontsize, **font_kwargs)
         text_surface = font.render(text, True, (0, 0, 0))

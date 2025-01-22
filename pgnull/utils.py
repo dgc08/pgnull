@@ -44,6 +44,10 @@ class Game_Events:
         pass
 
     @staticmethod
+    def on_predraw():
+        pass
+
+    @staticmethod
     def on_mouse_down(pos, button):
         pass
 

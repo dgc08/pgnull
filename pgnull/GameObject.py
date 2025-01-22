@@ -3,6 +3,7 @@ from .Game import Game
 class GameObject:
     def __init__(self):
         self.queue()
+
     # Dequeue so it's functions won't get called
     def dequeue(self):
         game = Game.get_game()
@@ -16,6 +17,12 @@ class GameObject:
 
         Game.get_game().on_draws.append(self.__draw)
         Game.get_game().on_updates.append(self.__update)
+
+    def event(self, event_name: str):
+        def decorator(func):
+            self.register_event(event_name, func)
+            return func
+        return decorator
 
     def __draw(self):
         if self.active:
