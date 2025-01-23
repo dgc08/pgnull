@@ -77,26 +77,8 @@ class Game:
             pygame.display.update()
             self.clock.tick(update_fps)
 
-        self.event_runner.on_close()
+        self.scene.on_close()
         self.close()
-        
-    def register_event(self, event: str, event_runnable):
-        if not callable(event_runnable):
-            raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
-
-        if not hasattr(self.event_runner, event):
-            event = "on_"+event
-        if not hasattr(self.event_runner, event):
-            raise TypeError("No Event named " + event)
-
-        self.event_runner.__setattr__(event, event_runnable)
-        return
-
-    def event(self, event_name: str):
-        def decorator(func):
-            self.register_event(event_name, func)
-            return func
-        return decorator
 
     def close(self):
         pygame.quit()

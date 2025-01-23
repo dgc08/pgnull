@@ -28,8 +28,15 @@ class Box(GameObject, Rect):
 
 
 class TextBox(Box):
-    def __init__(self, pos:Vector2, text, size=None, color=None, fontsize=32, font=None, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
+    def __init__(self, text, pos:Vector2=None, size=None, color=None, topleft=None, fontsize=32, font=None, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
+        if not topleft and not pos:
+            raise Exception("No position argument passed")
+        elif topleft:
+            pos = (0,0)
+
         super().__init__(pos, size, color)
+
+        self.box_topleft = topleft
 
         self.text = text
         self.text_color = text_color
@@ -44,9 +51,13 @@ class TextBox(Box):
         super().draw()
         
         screen = Game.get_game().screen
-        
-        text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
-        text_position = (self.left + (self.width - text_width) // 2, self.top + (self.height - text_height) // 2)
+
+        if self.box_topleft:
+            text_position = self.box_topleft
+        else:
+            text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
+            text_position = (self.left + (self.width - text_width) // 2, self.top + (self.height - text_height) // 2)
+
         screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
 
 
