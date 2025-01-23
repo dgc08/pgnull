@@ -1,6 +1,5 @@
 from pygame import display
 import pygame.font
-from .utils import Colors
 
 from pygame import draw
 
@@ -14,7 +13,7 @@ class Screen:
 
         self.draw = draw
 
-    def draw_text(self, text , topleft, font=None, fontsize = 32, color=Colors.BLACK, font_kwargs={}, render_kwargs={}):
+    def draw_text(self, text , topleft, font=None, fontsize = 32, color=(0,0,0), font_kwargs={}, render_kwargs={}):
         font = pygame.font.Font(font, fontsize, **font_kwargs)
         text_obj = font.render(text, True, color, **render_kwargs)
         self.blit(text_obj, topleft)
