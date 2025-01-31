@@ -1,5 +1,7 @@
 import pygame.image
 from pygame.sprite import Sprite as pygame_sprite
+from pygame import MOUSEBUTTONDOWN
+from pygame import mouse
 from pygame.math import *
 
 from .Game import Game
@@ -23,6 +25,9 @@ class Sprite(GameObject, pygame_sprite):
 
         if pos:
             self.pos = pos
+
+    def update(self, ctx):
+        self.check_for_click(ctx)
 
     @property
     def pos(self):
@@ -88,3 +93,17 @@ class Sprite(GameObject, pygame_sprite):
 
     def draw(self):
         Game.get_game().screen.blit(self.image, self.rect)
+
+
+    def check_for_click(self, ctx):
+        for event in ctx.events:
+            if event.type == MOUSEBUTTONDOWN:
+                pos = mouse.get_pos()
+                button = event.button
+
+                if button == 1 and self.rect.collidepoint(pos):
+                    self.on_click()
+
+    @staticmethod
+    def on_click():
+        pass
