@@ -17,6 +17,10 @@ class GameObject:
             return func
         return decorator
 
+    def dequeue(self):
+        # Delete yourself from the current scene
+        Game.get_game().scene.remove_game_object(self)
+
     def draw(self, ):
         pass
     def update(self, ctx):

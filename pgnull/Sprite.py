@@ -24,14 +24,14 @@ class Sprite(GameObject, pygame_sprite):
         self.rotation = angle
 
         if pos:
-            self.pos = pos
+            self.pos = Vector2(pos)
 
     def update(self, ctx):
         self.check_for_click(ctx)
 
     @property
     def pos(self):
-        return self.rect.x, self.rect.y
+        return Vector2(self.rect.x, self.rect.y)
     @pos.setter
     def pos(self, value):
         self.rect.x, self.rect.y = value
