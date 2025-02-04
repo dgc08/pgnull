@@ -1,8 +1,12 @@
 from .Game import Game
 
+from pygame.math import Vector2
+
 class GameObject:
     def __init__(self):
         self.active = True
+        self.static = False
+        self.pos_val = Vector2(0,0)
 
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):

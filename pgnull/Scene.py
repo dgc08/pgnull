@@ -1,5 +1,7 @@
 from .utils import glob_singleton
 
+from pygame.math import Vector2
+
 class Scene:
     @staticmethod
     def on_update(context):
@@ -49,6 +51,7 @@ class Scene:
     def __init__(self, background_color=None):
         self.color = background_color
         self._game_objs = []
+        self.camera = Vector2(0,0)
 
     def add_game_object(self, game_obj):
         self._game_objs.append(game_obj)
@@ -74,7 +77,12 @@ class Scene:
         self.on_predraw()
         for g in self._game_objs:
             if g.active:
-                g.draw()
+                if g.static:
+                    g.draw()
+                else:
+                    g.pos -= self.camera
+                    g.draw()
+                    g.pos += self.camera
         self.on_draw()
 
 

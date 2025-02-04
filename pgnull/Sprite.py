@@ -8,7 +8,7 @@ from .Game import Game
 from .GameObject import GameObject
 
 class Sprite(GameObject, pygame_sprite):
-    def __init__(self, image_path, pos=None, scale=(1,1), angle=0):
+    def __init__(self, image_path, pos=None, scale=(1,1), angle=0, pivot=(0,0)):
         super(Sprite, self).__init__()
 
         self.pygame_obj = self
@@ -86,10 +86,16 @@ class Sprite(GameObject, pygame_sprite):
         return self.__angle
     @rotation.setter
     def rotation(self, value):
-        value = value % 360
+        value = value % 360.0
         self.__angle = value
         self.__rescale_and_rotate()
 
+    @property
+    def center(self):
+        return self.rect.center
+    @center.setter
+    def center(self, value):
+        self.rect.center = value
 
     def draw(self):
         Game.get_game().screen.blit(self.image, self.rect)
