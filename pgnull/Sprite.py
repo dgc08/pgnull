@@ -11,7 +11,6 @@ class Sprite(GameObject, pygame_sprite):
     def __init__(self, image_path, pos=None, scale=(1,1), angle=0, pivot=(0,0)):
         super(Sprite, self).__init__()
 
-        self.pygame_obj = self
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -67,6 +66,15 @@ class Sprite(GameObject, pygame_sprite):
 
         self.image = pygame.transform.rotate(
             pygame.transform.scale(self.original_image, (new_width, new_height)),
+            self.__angle
+        )
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+        self.colliderect = self.rect.colliderect
+
+    def set_size(self, x, y):
+        self.image = pygame.transform.rotate(
+            pygame.transform.scale(self.original_image, (x, y)),
             self.__angle
         )
         self.rect = self.image.get_rect(center=self.rect.center)
