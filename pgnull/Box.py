@@ -22,6 +22,13 @@ class Box(GameObject, Rect):
         else:
             Rect.__init__(self, pos, (0,0))
 
+    @property
+    def pos(self) -> Vector2:
+        return Vector2(self.x, self.y)
+    @pos.setter
+    def pos(self, value: Vector2):
+        self.x, self.y = value
+
     def draw(self):
         if self.color:
             draw.rect(Game.get_game().screen.pygame_obj, self.color, self)
