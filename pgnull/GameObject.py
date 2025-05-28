@@ -6,7 +6,6 @@ class GameObject:
     def __init__(self):
         self.active = True
         self.static = False
-        self.pos_val = Vector2(0,0)
 
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):
@@ -14,6 +13,14 @@ class GameObject:
 
         self.__setattr__(event, event_runnable)
         return
+
+    # dummy attribute, if you yourself are being drawn in some way you should replace this
+    @property
+    def pos(self) -> Vector2:
+        return (0,0)
+    @pos.setter
+    def pos(self, value):
+        pass
 
     def event(self, event_name: str):
         def decorator(func):
