@@ -7,7 +7,6 @@ from .Screen import Screen
 from . import utils
 
 class Game:
-    game = None
     @staticmethod
     def get_game():
         if utils.glob_singleton.get("game"):

@@ -81,6 +81,5 @@ class Button(TextBox):
                 if button == 1 and self.collidepoint(pos):
                     self.on_click()
 
-    @staticmethod
-    def on_click():
+    def on_click(self):
         print("generic on click")

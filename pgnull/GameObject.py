@@ -35,8 +35,8 @@ class GameObject():
         pass
 
 
-    def __init__(self, background_color=None):
-        self.color = background_color
+    def __init__(self):
+        self.bg_color = None
         self._game_objs = []
         self.pos = Vector2(0,0)
 
@@ -54,8 +54,10 @@ class GameObject():
    #     # use dequeue instead
    #     self._game_objs.remove(game_obj)
 
-    def register_object(self, game_obj, name):
-        setattr(self, name, game_obj)
+    #short name on purpose
+    def reg_obj(self, game_obj, name):
+        if name:
+            setattr(self, name, game_obj)
         self.add_game_object(game_obj)
 
     def register_event(self, event: str, event_runnable):
@@ -72,10 +74,10 @@ class GameObject():
         return decorator
 
     def do_draw(self):
-        if self.color:
+        if self.bg_color:
             # in case there is a background color set
             # please do only use this for one scene in the tree
-            glob_singleton["game"].screen.fill(self.color)
+            glob_singleton["game"].screen.fill(self.bg_color)
         # draw children last -> draw children on top of you
         self.on_draw()
         for g in self._game_objs:
