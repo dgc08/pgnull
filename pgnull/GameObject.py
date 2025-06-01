@@ -39,7 +39,11 @@ class GameObject():
         self.bg_color = None
         self._game_objs = []
         self._name_map = {}
+
         self.pos = Vector2(0,0)
+        if not hasattr(self, "height"):
+            self.height = 0
+            self.width = 0
 
         self.static = False
         self.active = True

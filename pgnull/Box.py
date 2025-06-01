@@ -59,10 +59,12 @@ class TextBox(Box):
         
         screen = Game.get_game().screen
 
+        text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
+        self.width, self.height = text_width, text_height
+
         if self.box_topleft:
             text_position = self.box_topleft
         else:
-            text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
             text_position = (self.left + (self.width - text_width) // 2, self.top + (self.height - text_height) // 2)
 
         screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
@@ -73,6 +75,11 @@ class Button(TextBox):
         super().__init__(*args, **kwargs)
 
     def on_update(self, ctx):
+        # save ctx for draw
+        self.ctx = ctx
+    def on_draw(self, ctx):
+        super().on_draw()
+        # check for click on draw, to get offseted position for click checking
         for event in ctx.events:
             if event.type == MOUSEBUTTONDOWN:
                 pos = mouse.get_pos()
