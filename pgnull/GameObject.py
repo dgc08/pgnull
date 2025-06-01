@@ -1,15 +1,62 @@
-from .Game import Game
+from .utils import glob_singleton
 
 from pygame.math import Vector2
 
-class GameObject:
-    def __init__(self):
-        self.active = True
+# This works the same as a Node in Godot
+class GameObject():
+    def on_update(self, context):
+        pass
+
+    def on_start(self, ):
+        pass
+
+    def on_iteration_start(self, ):
+        pass
+
+    def on_close(self, ):
+        pass
+
+    def on_draw(self, ):
+        pass
+
+    def on_mouse_down(self, pos, button):
+        pass
+
+    def on_mouse_up(self, pos, button):
+        pass
+
+    def on_mouse_move(self, pos, rel, buttons):
+        pass
+
+    def on_key_down(self, key):
+        pass
+
+    def on_key_up(self, key):
+        pass
+
+
+    def __init__(self, background_color=None):
+        self.color = background_color
+        self._game_objs = []
+        self.pos = Vector2(0,0)
+
         self.static = False
-
+        self.active = True
         self.__dequeued = False
-
         self.parent = None
+
+    def add_game_object(self, game_obj):
+        game_obj.parent = self
+        self._game_objs.append(game_obj)
+        game_obj.on_start()
+
+   # def remove_game_object(self, game_obj):
+   #     # use dequeue instead
+   #     self._game_objs.remove(game_obj)
+
+    def register_object(self, game_obj, name):
+        setattr(self, name, game_obj)
+        self.add_game_object(game_obj)
 
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):
@@ -18,33 +65,42 @@ class GameObject:
         self.__setattr__(event, event_runnable)
         return
 
-    # dummy attribute, if you yourself are being drawn in some way you should replace this
-    @property
-    def pos(self) -> Vector2:
-        return Vector2(0,0)
-    @pos.setter
-    def pos(self, value):
-        pass
-
     def event(self, event_name: str):
         def decorator(func):
             self.register_event(event_name, func)
             return func
         return decorator
 
+    def do_draw(self):
+        if self.color:
+            # in case there is a background color set
+            # please do only use this for one scene in the tree
+            glob_singleton["game"].screen.fill(self.color)
+        # draw children last -> draw children on top of you
+        self.on_draw()
+        for g in self._game_objs:
+            if g.active:
+                if g.static:
+                    g.do_draw()
+                else:
+                    g.pos += self.pos
+                    g.do_draw()
+                    g.pos -= self.pos
+
+
+    def do_update(self, ctx):
+        for g in self._game_objs:
+            if g.is_dequeued():
+                self._game_objs.remove(g)
+                del g
+                continue
+            if g.active:
+                g.do_update(ctx)
+        #in analogy to draw, update yourself last
+        self.on_update(ctx)
+
     def is_dequeued(self):
         return self.__dequeued
 
     def dequeue(self):
         self.__dequeued = True
-
-        # Delete yourself from the current scene
-        # We do not do that anymore because this approach is not fit
-        #Game.get_game().scene.remove_game_object(self)
-
-    def draw(self, ):
-        pass
-    def update(self, ctx):
-        pass
-    def start(self):
-        pass

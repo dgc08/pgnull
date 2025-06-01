@@ -3,7 +3,6 @@ import pygame
 from .Clock import Clock
 from .Keyboard import Keyboard
 from .Screen import Screen
-from .Scene import Scene
 
 from . import utils
 
@@ -24,9 +23,6 @@ class Game:
         self.clock = Clock()
         self.keyboard = Keyboard()
 
-        self.on_updates = []
-        self.on_draws = []
-
         self.__running = False
 
     def load_scene(self, scene):
@@ -34,7 +30,7 @@ class Game:
         self.scene = scene
         scene.on_start()
 
-    def run_game(self, scene:Scene=None, update_fps=60):
+    def run_game(self, scene=None, update_fps=60):
         if scene:
             self.load_scene(scene)
         self.__run_game_loop(update_fps)

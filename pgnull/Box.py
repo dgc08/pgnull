@@ -29,7 +29,7 @@ class Box(GameObject, Rect):
     def pos(self, value: Vector2):
         self.x, self.y = value
 
-    def draw(self):
+    def on_draw(self):
         if self.color:
             draw.rect(Game.get_game().screen.pygame_obj, self.color, self)
 
@@ -54,8 +54,8 @@ class TextBox(Box):
         self.font_kwargs = font_kwargs
         self.render_kwargs = render_kwargs
 
-    def draw(self):
-        super().draw()
+    def on_draw(self):
+        super().on_draw()
         
         screen = Game.get_game().screen
 
@@ -72,7 +72,7 @@ class Button(TextBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def update(self, ctx):
+    def on_update(self, ctx):
         for event in ctx.events:
             if event.type == MOUSEBUTTONDOWN:
                 pos = mouse.get_pos()

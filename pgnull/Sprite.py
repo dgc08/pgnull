@@ -9,11 +9,14 @@ from .GameObject import GameObject
 
 class Sprite(GameObject, pygame_sprite):
     def __init__(self, image_path, pos=None, scale=(1,1), angle=0, pivot=(0,0)):
-        super(Sprite, self).__init__()
 
+        # load image and rect before super().__init__, because GameObject.__init__() sets the position to zero,
+        # which links back to self.rect and causes an AttributeError otherwise
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image
         self.rect = self.image.get_rect()
+
+        super(Sprite, self).__init__()
 
         scale = Vector2(scale)
         
@@ -25,7 +28,7 @@ class Sprite(GameObject, pygame_sprite):
         if pos:
             self.pos = Vector2(pos)
 
-    def update(self, ctx):
+    def on_update(self, ctx):
         self.check_for_click(ctx)
 
     @property
@@ -105,7 +108,7 @@ class Sprite(GameObject, pygame_sprite):
     def center(self, value):
         self.rect.center = value
 
-    def draw(self):
+    def on_draw(self):
         Game.get_game().screen.blit(self.image, self.rect)
 
 
