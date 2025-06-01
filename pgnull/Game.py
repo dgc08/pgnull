@@ -37,6 +37,9 @@ class Game:
     def __run_game_loop(self, update_fps):
         self.__running = True
         while self.__running:
+            if not self.scene:
+                # no scene, no game loop
+                return 
             self.scene.on_iteration_start()
             events = pygame.event.get()
 
@@ -63,10 +66,16 @@ class Game:
                     self.scene.on_close()
                     self.close()
                 self.clock.check_schedule(event.type)
+                if not self.scene:
+                    # some scene event might have caused the scene to kill itself
+                    return
 
             ctx = utils.Game_Context(events, self.keyboard)
 
             self.scene.do_update(ctx)
+            if not self.scene:
+                # sometimes, update kills the scene
+                return 
             self.scene.do_draw()
 
             pygame.display.update()
@@ -84,3 +93,7 @@ class Game:
     def dequeue(self):
         # alias for quit, in case some Scene wants to dequeue their parent and the parent is the game
         self.quit()
+
+    def perform_dequeue_for(self, obj):
+        if self.scene == obj:
+            self.scene = None

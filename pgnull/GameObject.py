@@ -38,11 +38,11 @@ class GameObject():
     def __init__(self):
         self.bg_color = None
         self._game_objs = []
+        self._name_map = {}
         self.pos = Vector2(0,0)
 
         self.static = False
         self.active = True
-        self.__dequeued = False
         self.parent = None
 
     def add_game_object(self, game_obj):
@@ -58,6 +58,8 @@ class GameObject():
     def reg_obj(self, game_obj, name):
         if name:
             setattr(self, name, game_obj)
+            self._name_map[game_obj] = name
+
         self.add_game_object(game_obj)
 
     def register_event(self, event: str, event_runnable):
@@ -89,20 +91,18 @@ class GameObject():
                     g.do_draw()
                     g.pos -= self.pos
 
-
+    def perform_dequeue_for(self, g):
+        self._game_objs.remove(g)
+        name = self._name_map.pop(g, None)
+        if name and hasattr(self, name):
+            delattr(self, name)
+        
     def do_update(self, ctx):
-        for g in self._game_objs:
-            if g.is_dequeued():
-                self._game_objs.remove(g)
-                del g
-                continue
+        for g in self._game_objs[:]: # safe iteration while modifying list
             if g.active:
                 g.do_update(ctx)
         #in analogy to draw, update yourself last
         self.on_update(ctx)
 
-    def is_dequeued(self):
-        return self.__dequeued
-
     def dequeue(self):
-        self.__dequeued = True
+        self.parent.perform_dequeue_for(self)
