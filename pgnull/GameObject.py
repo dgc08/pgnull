@@ -7,6 +7,10 @@ class GameObject:
         self.active = True
         self.static = False
 
+        self.__dequeued = False
+
+        self.parent = None
+
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):
             raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")
@@ -17,7 +21,7 @@ class GameObject:
     # dummy attribute, if you yourself are being drawn in some way you should replace this
     @property
     def pos(self) -> Vector2:
-        return (0,0)
+        return Vector2(0,0)
     @pos.setter
     def pos(self, value):
         pass
@@ -28,11 +32,19 @@ class GameObject:
             return func
         return decorator
 
+    def is_dequeued(self):
+        return self.__dequeued
+
     def dequeue(self):
+        self.__dequeued = True
+
         # Delete yourself from the current scene
-        Game.get_game().scene.remove_game_object(self)
+        # We do not do that anymore because this approach is not fit
+        #Game.get_game().scene.remove_game_object(self)
 
     def draw(self, ):
         pass
     def update(self, ctx):
+        pass
+    def start(self):
         pass

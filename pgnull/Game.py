@@ -30,13 +30,13 @@ class Game:
         self.__running = False
 
     def load_scene(self, scene):
+        scene.parent = self
         self.scene = scene
         scene.on_start()
 
     def run_game(self, scene:Scene=None, update_fps=60):
         if scene:
-            self.scene = scene
-            scene.on_start()
+            self.load_scene(scene)
         self.__run_game_loop(update_fps)
 
     def __run_game_loop(self, update_fps):
@@ -86,3 +86,6 @@ class Game:
 
     def quit(self):
         self.__running = False
+    def dequeue(self):
+        # alias for quit, in case some Scene wants to dequeue their parent and the parent is the game
+        self.quit()
