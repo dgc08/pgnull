@@ -16,7 +16,7 @@ class GameObject():
     def on_close(self, ):
         pass
 
-    def on_draw(self, ):
+    def on_draw(self, ctx):
         pass
 
     def on_mouse_down(self, pos, button):
@@ -79,20 +79,21 @@ class GameObject():
             return func
         return decorator
 
-    def do_draw(self):
+    def do_draw(self, ctx):
+        # draw is same as update, just later and the GameObjects offset the pos of their children according to their own pos
         if self.bg_color:
             # in case there is a background color set
             # please do only use this for one scene in the tree
             glob_singleton["game"].screen.fill(self.bg_color)
         # draw children last -> draw children on top of you
-        self.on_draw()
+        self.on_draw(ctx)
         for g in self._game_objs:
             if g.active:
                 if g.static:
-                    g.do_draw()
+                    g.do_draw(ctx)
                 else:
                     g.pos += self.pos
-                    g.do_draw()
+                    g.do_draw(ctx)
                     g.pos -= self.pos
 
     def perform_dequeue_for(self, g):

@@ -76,7 +76,7 @@ class Game:
             if not self.scene:
                 # sometimes, update kills the scene
                 return 
-            self.scene.do_draw()
+            self.scene.do_draw(ctx)
 
             pygame.display.update()
             self.clock.tick(update_fps)

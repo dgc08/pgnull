@@ -5,6 +5,7 @@ from pygame.math import Vector2
 from pygame import draw
 from pygame import MOUSEBUTTONDOWN
 from pygame import mouse
+from pygame import font as font_pg
 
 #import pygame
 
@@ -29,22 +30,26 @@ class Box(GameObject, Rect):
     def pos(self, value: Vector2):
         self.x, self.y = value
 
-    def on_draw(self):
+    def on_draw(self, ctx):
         if self.color:
             draw.rect(Game.get_game().screen.pygame_obj, self.color, self)
 
 
-class TextBox(Box):
+class TextBox(GameObject):
     def __init__(self, text, pos:Vector2=None, size=None, color=None, topleft=None, fontsize=32, font=None, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
+        self.box = Box(pos, size, color)
+
         if not topleft and not pos:
             raise Exception("No position argument passed")
         elif topleft:
-            pos = (0,0)
-
-        super().__init__(pos, size, color)
-
-        self.box_topleft = topleft
-
+            self.box_topleft = Vector2(topleft)
+            pos = Vector2(0,0)
+            super().__init__()
+        else:
+            self.box_topleft = None
+            super().__init__() # because this resets the position
+            self.pos = pos
+        
         self.text = text
         self.text_color = text_color
 
@@ -54,18 +59,45 @@ class TextBox(Box):
         self.font_kwargs = font_kwargs
         self.render_kwargs = render_kwargs
 
-    def on_draw(self):
-        super().on_draw()
-        
+    def get_text_size(self):
+        return Game.get_game().screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
+
+    @property
+    def width(self):
+        return self.get_text_size()[0]
+    @width.setter
+    def width(self, val):
+        pass
+
+    @property
+    def pos(self):
+        return self.box.pos
+    @pos.setter
+    def pos(self, val):
+        if self.box_topleft:
+            self.box_topleft += Vector2(val)-self.pos
+        else:
+            self.box.pos = Vector2(val)
+
+    @property
+    def height(self):
+        return self.get_text_size()[1]
+    @height.setter
+    def height(self, val):
+        pass
+
+
+    def on_draw(self, ctx):
+        super().on_draw(ctx)
+
         screen = Game.get_game().screen
 
         text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
-        self.width, self.height = text_width, text_height
 
         if self.box_topleft:
             text_position = self.box_topleft
         else:
-            text_position = (self.left + (self.width - text_width) // 2, self.top + (self.height - text_height) // 2)
+            text_position = (self.box.left + (self.box.width - text_width) // 2, self.box.top + (self.box.height - text_height) // 2)
 
         screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
 
@@ -87,6 +119,8 @@ class Button(TextBox):
 
                 if button == 1 and self.collidepoint(pos):
                     self.on_click()
+
+        super().on_draw(ctx)
 
     def on_click(self):
         print("generic on click")

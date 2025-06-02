@@ -28,8 +28,6 @@ class Sprite(GameObject, pygame_sprite):
         if pos:
             self.pos = Vector2(pos)
 
-        self.ctx = None
-        
     @property
     def pos(self):
         return Vector2(self.rect.x, self.rect.y)
@@ -107,17 +105,11 @@ class Sprite(GameObject, pygame_sprite):
     def center(self, value):
         self.rect.center = value
 
-    def on_update(self, ctx):
-        # save ctx for draw
-        self.ctx = ctx
-    def on_draw(self):
+    def on_draw(self, ctx):
+        # check for click on draw, to get offseted position for click checking
+        self.check_for_click(ctx)
+
         Game.get_game().screen.blit(self.image, self.rect)
-
-        if self.ctx:
-            # check for click on draw, to get offseted position for click checking
-            self.check_for_click(self.ctx)
-
-
 
     def check_for_click(self, ctx):
         for event in ctx.events:
