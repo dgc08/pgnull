@@ -10,6 +10,7 @@ class Screen:
 
         self.fill = self.pygame_obj.fill
         self.blit = self.pygame_obj.blit
+        self.surface = self.pygame_obj
 
         self.draw = draw
 
@@ -18,10 +19,13 @@ class Screen:
         text_obj = font.render(text, True, color, **render_kwargs)
         self.blit(text_obj, topleft)
 
-    def get_text_size(self, text, font=None, fontsize=32, font_kwargs={}):
+    def get_text_size(self, text, font=None, fontsize=32, line_gap = 3, font_kwargs={}):
         font = pygame.font.Font(font, fontsize, **font_kwargs)
-        text_surface = font.render(text, True, (0, 0, 0))
-        return text_surface.get_size()
+        lines = text.split('\n')
+        widths, heights = zip(*(font.render(line, True, (0, 0, 0)).get_size() for line in lines))
+        total_height = sum(heights)
+        max_width = max(widths)
+        return max_width, total_height
 
     def draw_textbox(self, text, rect, font=None, fontsize=32, color=(0, 0, 0),
                      font_kwargs={}, render_kwargs={}):

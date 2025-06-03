@@ -36,16 +36,17 @@ class Box(GameObject, Rect):
 
 
 class TextBox(GameObject):
-    def __init__(self, text, pos:Vector2=None, size=None, color=None, topleft=None, fontsize=32, font=None, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
-        self.box = Box(pos, size, color)
-
+    def __init__(self, text, pos:Vector2=None, size=None, color=None, topleft=None, fontsize=32, font=None, line_gap=3, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
         if not topleft and not pos:
             raise Exception("No position argument passed")
         elif topleft:
+            self.box = Box((0,0), size, color)
             self.box_topleft = Vector2(topleft)
+            self.box.topleft = self.box_topleft
             pos = Vector2(0,0)
             super().__init__()
         else:
+            self.box = Box(pos, size, color)
             self.box_topleft = None
             super().__init__() # because this resets the position
             self.pos = pos
@@ -55,12 +56,13 @@ class TextBox(GameObject):
 
         self.fontsize = fontsize
         self.font = font
+        self.line_gap = line_gap
 
         self.font_kwargs = font_kwargs
         self.render_kwargs = render_kwargs
 
     def get_text_size(self):
-        return Game.get_game().screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
+        return Game.get_game().screen.get_text_size(self.text, self.font, self.fontsize, self.line_gap, self.font_kwargs)
 
     @property
     def width(self):
@@ -95,8 +97,15 @@ class TextBox(GameObject):
         text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
 
         if self.box_topleft:
-            text_position = self.box_topleft
+            x, y = self.box_topleft
         else:
-            text_position = (self.box.left + (self.box.width - text_width) // 2, self.box.top + (self.box.height - text_height) // 2)
+            x = self.box.left + (self.box.width - text_width) // 2
+            y = self.box.top + (self.box.height - text_height) // 2
 
-        screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
+        font = font_pg.Font(self.font, self.fontsize, **self.font_kwargs)
+        lines = self.text.split('\n')
+
+        for line in lines:
+            text_surface = font.render(line, True, self.text_color)
+            screen.surface.blit(text_surface, (x, y))
+            y += text_surface.get_height() + self.line_gap
