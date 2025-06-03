@@ -100,27 +100,3 @@ class TextBox(GameObject):
             text_position = (self.box.left + (self.box.width - text_width) // 2, self.box.top + (self.box.height - text_height) // 2)
 
         screen.draw_text(self.text, text_position, self.font, self.fontsize, self.text_color, self.font_kwargs, self.render_kwargs)
-
-
-class Button(TextBox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def on_update(self, ctx):
-        # save ctx for draw
-        self.ctx = ctx
-    def on_draw(self, ctx):
-        super().on_draw()
-        # check for click on draw, to get offseted position for click checking
-        for event in ctx.events:
-            if event.type == MOUSEBUTTONDOWN:
-                pos = mouse.get_pos()
-                button = event.button
-
-                if button == 1 and self.collidepoint(pos):
-                    self.on_click()
-
-        super().on_draw(ctx)
-
-    def on_click(self):
-        print("generic on click")

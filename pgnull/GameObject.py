@@ -37,7 +37,7 @@ class GameObject():
 
     def __init__(self):
         self.bg_color = None
-        self._game_objs = []
+        self.__game_objs = []
         self._name_map = {}
 
         self.pos = Vector2(0,0)
@@ -51,12 +51,12 @@ class GameObject():
 
     def add_game_object(self, game_obj):
         game_obj.parent = self
-        self._game_objs.append(game_obj)
+        self.__game_objs.append(game_obj)
         game_obj.on_start()
 
    # def remove_game_object(self, game_obj):
    #     # use dequeue instead
-   #     self._game_objs.remove(game_obj)
+   #     self.__game_objs.remove(game_obj)
 
     #short name on purpose
     def reg_obj(self, game_obj, name):
@@ -87,7 +87,7 @@ class GameObject():
             glob_singleton["game"].screen.fill(self.bg_color)
         # draw children last -> draw children on top of you
         self.on_draw(ctx)
-        for g in self._game_objs:
+        for g in self.__game_objs:
             if g.active:
                 if g.static:
                     g.do_draw(ctx)
@@ -95,19 +95,23 @@ class GameObject():
                     g.pos += self.pos
                     g.do_draw(ctx)
                     g.pos -= self.pos
-
-    def perform_dequeue_for(self, g):
-        self._game_objs.remove(g)
-        name = self._name_map.pop(g, None)
-        if name and hasattr(self, name):
-            delattr(self, name)
-        
     def do_update(self, ctx):
-        for g in self._game_objs[:]: # safe iteration while modifying list
+        for g in self.__game_objs[:]: # safe iteration while modifying list
             if g.active:
                 g.do_update(ctx)
         #in analogy to draw, update yourself last
         self.on_update(ctx)
+
+    def perform_dequeue_for(self, g):
+        # perfom dequeue for given child
+        # this is usually only called by the child's .dequeue()
+        self.__game_objs.remove(g)
+        name = self._name_map.pop(g, None)
+        if name and hasattr(self, name):
+            delattr(self, name)
+
+    def get_children(self):
+        return self.__game_objs.copy()
 
     def dequeue(self):
         self.parent.perform_dequeue_for(self)

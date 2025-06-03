@@ -12,9 +12,34 @@ class VPane(GameObject):
         #
         # we only inherit from GameObject so no super() call needed
         last_y = 0
-        for g in self._game_objs:
-            g.y = last_y # we can do this becasue objects of custom classes are passed by reference
+        for g in self.get_children():
+            g.pos = (g.pos[0], last_y) # we can do this becasue objects of custom classes are passed by reference
             last_y += g.height + self.element_gap
+
+    @property
+    def height(self):
+        ret = 0
+        for g in self.get_children():
+            ret += g.height + self.element_gap
+
+        if ret == 0:
+            return 0
+
+        return ret - self.element_gap
+    @height.setter
+    def height(self, v):
+        pass #discard
+
+    @property
+    def width(self):
+        ret = 0
+        for g in self.get_children():
+            if g.width > ret:
+                ret = g.width
+        return ret
+    @width.setter
+    def width(self, v):
+        pass #discard
 
 
 
@@ -25,6 +50,31 @@ class HPane(GameObject):
 
     def on_draw(self, ctx):
         last_x = 0
-        for g in self._game_objs:
-            g.x = last_x # we can do this becasue objects of custom classes are passed by reference
+        for g in self.get_children():
+            g.pos = (last_x, g.pos[1]) # we can do this becasue objects of custom classes are passed by reference
             last_x += g.width + self.element_gap
+
+    @property
+    def width(self):
+        ret = 0
+        for g in self.get_children():
+            ret += g.width + self.element_gap
+
+        if ret == 0:
+            return 0
+
+        return ret - self.element_gap
+    @width.setter
+    def width(self, v):
+        pass #discard
+
+    @property
+    def height(self):
+        ret = 0
+        for g in self.get_children():
+            if g.height > ret:
+                ret = g.height
+        return ret
+    @height.setter
+    def height(self, v):
+        pass #discard
