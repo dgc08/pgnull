@@ -79,6 +79,13 @@ class GameObject():
             return func
         return decorator
 
+    def do_update(self, ctx):
+        #in analogy to draw, update yourself first
+        self.on_update(ctx)
+        for g in self.__game_objs[:]: # safe iteration while modifying list
+            if g.active:
+                g.do_update(ctx)
+
     def do_draw(self, ctx):
         # draw is same as update, just later and the GameObjects offset the pos of their children according to their own pos
         if self.bg_color:
@@ -87,7 +94,7 @@ class GameObject():
             glob_singleton["game"].screen.fill(self.bg_color)
         # draw children last -> draw children on top of you
         self.on_draw(ctx)
-        for g in self.__game_objs:
+        for g in self.__game_objs[:]:
             if g.active:
                 if g.static:
                     g.do_draw(ctx)
@@ -95,12 +102,6 @@ class GameObject():
                     g.pos += self.pos
                     g.do_draw(ctx)
                     g.pos -= self.pos
-    def do_update(self, ctx):
-        for g in self.__game_objs[:]: # safe iteration while modifying list
-            if g.active:
-                g.do_update(ctx)
-        #in analogy to draw, update yourself last
-        self.on_update(ctx)
 
     def perform_dequeue_for(self, g):
         # perfom dequeue for given child
