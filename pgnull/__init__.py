@@ -7,3 +7,4 @@ from .Box import *
 from .Panes import *
 
 from . import utils
+from .Audio import AudioPlayer
