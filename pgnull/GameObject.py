@@ -59,7 +59,7 @@ class GameObject():
    #     self.__game_objs.remove(game_obj)
 
     #short name on purpose
-    def reg_obj(self, game_obj, name):
+    def reg_obj(self, game_obj, name=None):
         if name:
             setattr(self, name, game_obj)
             self._name_map[game_obj] = name
