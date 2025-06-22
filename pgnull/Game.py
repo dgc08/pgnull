@@ -7,6 +7,7 @@ from .Screen import Screen
 from . import utils
 
 class Game:
+    # Diese Klasse übernimmt dinge wie die Main Game loop, events auslesen etc
     @staticmethod
     def get_game():
         if utils.glob_singleton.get("game"):
@@ -25,7 +26,10 @@ class Game:
         self.__running = False
 
     def load_scene(self, scene):
-        scene.parent = self
+        # Eine Szene ist jetzt auch einfach nur ein GameObject, beide Klassen wurden zusammengeführt
+        # self.scene ist der "Root-Node" des Spiels, alles auf dem Bildschirm ist dort enthalten
+        # Wird eine neue Szene geladen, dann wird alles ersetzt
+        scene.parent = self # das parent der szene ist das Game selbst, auch wenn das Game strengenommen kein GameObject ist
         self.scene = scene
         scene.on_start()
 
@@ -39,10 +43,12 @@ class Game:
         while self.__running:
             if not self.scene:
                 # no scene, no game loop
+                # return back to the caller of run_game
                 return 
             self.scene.on_iteration_start()
-            events = pygame.event.get()
 
+            # alle events auslesen und die handler der main szene aufrufen bzw den context (keyboard etc), der an nach unten propagiert wird, anpassen
+            events = pygame.event.get()
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     key = pygame.key.name(event.key).lower()
@@ -67,18 +73,22 @@ class Game:
                     self.close()
                 self.clock.check_schedule(event.type)
                 if not self.scene:
-                    # some scene event might have caused the scene to kill itself
+                    # the scene might have killed (dequeued) itself
                     return
 
+            # den context für alle gameobjects bereit machen
             ctx = utils.Game_Context(events, self.keyboard)
 
+            # die szene updaten, die dann alle ihre kinder updated
             self.scene.do_update(ctx)
             if not self.scene:
-                # sometimes, update kills the scene
-                return 
+                # if the scene dequeued itself
+                return
+            # wie update, nur mit draw
             self.scene.do_draw(ctx)
 
             pygame.display.update()
+            # pygame tick
             self.clock.tick(update_fps)
 
         self.scene.on_close()
@@ -91,9 +101,10 @@ class Game:
     def quit(self):
         self.__running = False
     def dequeue(self):
-        # alias for quit, in case some Scene wants to dequeue their parent and the parent is the game
+        # alias für quit, sodass die aktuell geladene Szene auch parent.dequeue aufrufen kann und nicht dann quit verwenden muss
         self.quit()
 
     def perform_dequeue_for(self, obj):
+        # äquivalent zu der gleichnamigen funktion in GameObject, sodass die aktuelle Szene sich selbst dequeuen kann
         if self.scene == obj:
             self.scene = None

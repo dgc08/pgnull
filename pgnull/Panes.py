@@ -1,6 +1,9 @@
 from .GameObject import GameObject
 
 class VPane(GameObject):
+    # eine hilfsklasse, die zum entwickeln von GUIs hilfreich ist
+    # alle kinder werden bevor sie gezeichtet werden vertikal mit abstand element_gap zwischeneinander ausgerichtet
+    # d.h. diese Klasse ändert die y-koordinate ihrer Kinder bei jedem Tick, sodass die Kinder ihre y-koordinate nicht mehr selbst ändern können
     def __init__(self, element_gap):
         super().__init__()
         self.element_gap = element_gap
@@ -44,6 +47,7 @@ class VPane(GameObject):
 
 
 class HPane(GameObject):
+    # Dasselbe wie VPane, nur halt horizontal (also hier wird die x-koord gemanaged)
     def __init__(self, element_gap):
         super().__init__()
         self.element_gap = element_gap

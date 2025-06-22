@@ -13,6 +13,7 @@ from .Game import Game
 from .GameObject import GameObject
 
 class Box(GameObject, Rect):
+    # Pygame Rect, aber als GameObject, falls man farbige rechtecke haben will
     def __init__(self, pos:Vector2, size:Vector2=None, color=None):
         self.color = color
 
@@ -90,6 +91,7 @@ class TextBox(GameObject):
 
 
     def on_draw(self, ctx):
+        # diese funktion wurde mit hilfe von ChatGPT geschrieben
         super().on_draw(ctx)
 
         screen = Game.get_game().screen

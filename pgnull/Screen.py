@@ -3,6 +3,8 @@ import pygame.font
 
 from pygame import draw
 
+# Alte klasse aus der zeit wenn alles in analogie zu pgzero gemacht wurde, man kann diese Funktionen auch direkt in class Game tun
+# TODO
 class Screen:
     def __init__(self, WIDTH, HEIGHT, caption):
         self.pygame_obj = display.set_mode((WIDTH, HEIGHT))

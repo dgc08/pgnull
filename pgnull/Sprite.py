@@ -57,7 +57,8 @@ class Sprite(GameObject, pygame_sprite):
         return self.rect.width
 
     def __rescale_and_rotate(self):
-        #prev_img = self.image
+        # prev_img = self.image
+        # diese funktion hat chatgpt code
 
         original_width, original_height = self.original_image.get_size()
 
@@ -73,6 +74,8 @@ class Sprite(GameObject, pygame_sprite):
         self.colliderect = self.rect.colliderect
 
     def set_size(self, x, y):
+        # nicht scale setzen, (also 1x vergrößert, 2x vergrößert etc) sondern die direkte größe in pixel
+        # dies ist natürlich einfacher wie scale
         self.image = pygame.transform.rotate(
             pygame.transform.scale(self.original_image, (x, y)),
             self.__angle
@@ -106,13 +109,14 @@ class Sprite(GameObject, pygame_sprite):
         self.rect.center = value
 
     def on_draw(self, ctx):
-        # check for click on draw, to get offseted position for click checking
+        # check for click in on_draw, to get offseted position (= actual position on screen) for click checking
         self.check_for_click(ctx)
 
         Game.get_game().screen.blit(self.image, self.rect)
 
     def check_for_click(self, ctx):
         for event in ctx.events:
+            # dies wurde größtenteils von irgendwo her kopiert aber ich weiß nicht von wo
             if event.type == MOUSEBUTTONDOWN:
                 pos = mouse.get_pos()
                 button = event.button
