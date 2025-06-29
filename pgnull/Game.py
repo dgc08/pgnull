@@ -16,9 +16,10 @@ class Game:
             return Game()
 
     def __init__(self, WIDTH, HEIGHT, caption="pgnull game"):
-        utils.glob_singleton["game"] = self
-
+        self.pygame_available = True
         pygame.init()
+
+        utils.glob_singleton["game"] = self
         self.screen = Screen(WIDTH, HEIGHT, caption)
         self.clock = Clock()
         self.keyboard = Keyboard()
@@ -44,7 +45,7 @@ class Game:
             if not self.scene:
                 # no scene, no game loop
                 # return back to the caller of run_game
-                return 
+                return
             self.scene.on_iteration_start()
 
             # alle events auslesen und die handler der main szene aufrufen bzw den context (keyboard etc), der an nach unten propagiert wird, anpassen
@@ -96,6 +97,7 @@ class Game:
 
     def close(self):
         pygame.quit()
+        self.pygame_available = False
         exit()
 
     def quit(self):

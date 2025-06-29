@@ -1,5 +1,6 @@
 import pygame
 from .GameObject import GameObject
+from .Game import Game
 
 class AudioPlayer(GameObject):
     def __init__(self, file_path=None):
@@ -16,7 +17,7 @@ class AudioPlayer(GameObject):
             self.channel = self.sound.play(loops=loops)
 
     def stop(self):
-        if self.channel:
+        if self.channel and Game.get_game().pygame_available:
             self.channel.stop()
 
     def set_volume(self, volume):
@@ -25,6 +26,6 @@ class AudioPlayer(GameObject):
 
     def is_playing(self):
         return self.channel.get_busy() if self.channel else False
-    
+
     def __del__(self):
         self.stop()
