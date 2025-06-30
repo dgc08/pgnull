@@ -10,9 +10,6 @@ class GameObject():
     def on_start(self, ):
         pass
 
-    def on_iteration_start(self, ):
-        pass
-
     def on_close(self, ):
         pass
 
@@ -33,7 +30,6 @@ class GameObject():
 
     def on_key_up(self, key):
         pass
-
 
     def __init__(self):
         self.bg_color = None
@@ -62,7 +58,7 @@ class GameObject():
     def reg_obj(self, game_obj, name=None):
         if name:
             setattr(self, name, game_obj)
-            self._name_map[game_obj] = name
+            self._name_map[id(game_obj)] = name
 
         self.add_game_object(game_obj)
 
@@ -82,6 +78,14 @@ class GameObject():
     def do_update(self, ctx):
         #in analogy to draw, update yourself first
         self.on_update(ctx)
+
+        # check all your event listeners
+        for listener in ctx.event_args:
+            if ctx.event_args[listener] is None:
+                pass
+            else:
+                getattr(self, listener)(*ctx.event_args[listener]) # call your listener
+
         for g in self.__game_objs[:]: # safe iteration while modifying list
             if g.active:
                 g.do_update(ctx)
@@ -107,7 +111,7 @@ class GameObject():
         # perfom dequeue for given child
         # this is usually only called by the child's .dequeue()
         self.__game_objs.remove(g)
-        name = self._name_map.pop(g, None)
+        name = self._name_map.pop(id(g), None)
         if name and hasattr(self, name):
             delattr(self, name)
 

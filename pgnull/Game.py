@@ -14,16 +14,24 @@ class Game:
         else:
             return Game()
 
-    def __init__(self, WIDTH, HEIGHT, caption="pgnull game"):
+    def __init__(self, WIDTH=None, HEIGHT=None, caption="pgnull game"):
+        if WIDTH:
+            self.init_screen(WIDTH, HEIGHT, caption)
+        else:
+            self.pygame_available = False
+
+        utils.glob_singleton["game"] = self
+
+        self.__running = False
+
+    def init_screen(self, WIDTH, HEIGHT, caption="pgnull game"):
         self.pygame_available = True
         pygame.init()
 
-        utils.glob_singleton["game"] = self
         self.screen = Screen(WIDTH, HEIGHT, caption)
         self.clock = Clock()
         self.keyboard = Keyboard()
 
-        self.__running = False
 
     def load_scene(self, scene):
         scene.parent = self
@@ -41,39 +49,35 @@ class Game:
             if not self.scene:
                 # return back to the caller of run_game
                 return
-            self.scene.on_iteration_start()
 
-            # alle events auslesen und die handler der main szene aufrufen bzw den context (keyboard etc), der an nach unten propagiert wird, anpassen
-            events = pygame.event.get()
+            if self.pygame_available:
+                events = pygame.event.get()
 
-            for event in events:
-                if event.type == pygame.KEYDOWN:
-                    key = pygame.key.name(event.key).lower()
-                    self.keyboard.set_key(key, True)
-
-                    self.scene.on_key_down(event.key)
-                elif event.type == pygame.KEYUP:
-                    key = pygame.key.name(event.key).lower()
-                    self.keyboard.set_key(key, False)
-
-                    self.scene.on_key_up(event.key)
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    self.scene.on_mouse_down(mouse_pos, event.button)
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    mouse_pos = pygame.mouse.get_pos()
-                    self.scene.on_mouse_up(mouse_pos, event.button)
-                elif event.type == pygame.MOUSEMOTION:
-                    self.scene.on_mouse_move(event.pos, event.rel, event.buttons)
-                elif event.type == pygame.QUIT:
-                    self.scene.on_close()
-                    self.close()
-                self.clock.check_schedule(event.type)
-                if not self.scene:
-                    # some scene event might have caused the scene to kill itself
-                    return
-
-            ctx = utils.Game_Context(events, self.keyboard)
+                ctx = utils.Game_Context(events, self.keyboard)
+            
+                for event in events:
+                    if event.type == pygame.KEYDOWN:
+                        key = pygame.key.name(event.key).lower()
+                        self.keyboard.set_key(key, True)
+                        ctx.event_args["on_key_down"] = (event.key, )
+                    elif event.type == pygame.KEYUP:
+                        key = pygame.key.name(event.key).lower()
+                        self.keyboard.set_key(key, False)
+                        ctx.event_args["on_key_up"] = (event.key, )
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_pos = pygame.mouse.get_pos()
+                        ctx.event_args["on_mouse_down"] = (mouse_pos, event.button)
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        mouse_pos = pygame.mouse.get_pos()
+                        ctx.event_args["on_mouse_up"] = (mouse_pos, event.button)
+                    elif event.type == pygame.MOUSEMOTION:
+                        ctx.event_args["on_mouse_move"] = (event.pos, event.rel, event.buttons)
+                    elif event.type == pygame.QUIT:
+                        ctx.event_args["on_close"] = ()
+                        self.__running = False
+                    self.clock.check_schedule(event.type)
+            else: # we somehow use this framework without pygame
+                ctx = utils.Game_Context(None, None)
 
             self.scene.do_update(ctx)
             if not self.scene:
@@ -81,14 +85,16 @@ class Game:
                 return 
             self.scene.do_draw(ctx)
 
-            pygame.display.update()
-            self.clock.tick(update_fps)
+            if self.pygame_available:
+                pygame.display.update()
+                self.clock.tick(update_fps)
 
         self.scene.on_close()
         self.close()
 
     def close(self):
-        pygame.quit()
+        if self.pygame_available:
+            pygame.quit()
         self.pygame_available = False
         exit()
 
