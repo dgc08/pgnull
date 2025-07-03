@@ -55,12 +55,21 @@ class TextBox(GameObject):
         self.text = text
         self.text_color = text_color
 
-        self.fontsize = fontsize
-        self.font = font
+        self.fontsize_internal = fontsize
+        self.font = font_pg.Font(font, self.fontsize_internal, **font_kwargs)
         self.line_gap = line_gap
 
         self.font_kwargs = font_kwargs
         self.render_kwargs = render_kwargs
+
+    @property
+    def fontsize(self):
+        return self.fontsize_internal
+    @fontsize.setter
+    def fontsize(self, val):
+        self.fontsize_internal = val
+        # regenerate font
+        self.font = font_pg.Font(font, self.fontsize_internal, **self.font_kwargs)
 
     def get_text_size(self):
         return Game.get_game().screen.get_text_size(self.text, self.font, self.fontsize, self.line_gap, self.font_kwargs)
@@ -96,18 +105,17 @@ class TextBox(GameObject):
 
         screen = Game.get_game().screen
 
-        text_width, text_height = screen.get_text_size(self.text, self.font, self.fontsize, self.font_kwargs)
+        text_width, text_height = self.get_text_size()
 
         if self.box_topleft:
             x, y = self.box_topleft
-        else:
+        else: # center
             x = self.box.left + (self.box.width - text_width) // 2
             y = self.box.top + (self.box.height - text_height) // 2
 
-        font = font_pg.Font(self.font, self.fontsize, **self.font_kwargs)
         lines = self.text.split('\n')
 
         for line in lines:
-            text_surface = font.render(line, True, self.text_color)
+            text_surface = self.font.render(line, True, self.text_color)
             screen.surface.blit(text_surface, (x, y))
             y += text_surface.get_height() + self.line_gap

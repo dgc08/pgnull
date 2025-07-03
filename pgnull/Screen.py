@@ -3,7 +3,7 @@ import pygame.font
 
 from pygame import draw
 
-# Alte klasse aus der zeit wenn alles in analogie zu pgzero gemacht wurde, man kann diese Funktionen auch direkt in class Game tun
+# Alte klasse aus der zeit wenn alles in analogie zu pgzero gemacht wurde, man könnte diese Funktionen auch direkt in class Game tun
 # TODO
 class Screen:
     def __init__(self, WIDTH, HEIGHT, caption):
@@ -16,21 +16,10 @@ class Screen:
 
         self.draw = draw
 
-    def draw_text(self, text , topleft, font=None, fontsize = 32, color=(0,0,0), font_kwargs={}, render_kwargs={}):
-        font = pygame.font.Font(font, fontsize, **font_kwargs)
-        text_obj = font.render(text, True, color, **render_kwargs)
-        self.blit(text_obj, topleft)
-
     def get_text_size(self, text, font=None, fontsize=32, line_gap = 3, font_kwargs={}):
-        font = pygame.font.Font(font, fontsize, **font_kwargs)
+        # chatgpt
         lines = text.split('\n')
         widths, heights = zip(*(font.render(line, True, (0, 0, 0)).get_size() for line in lines))
         total_height = sum(heights)
         max_width = max(widths)
         return max_width, total_height
-
-    def draw_textbox(self, text, rect, font=None, fontsize=32, color=(0, 0, 0),
-                     font_kwargs={}, render_kwargs={}):
-        text_width, text_height = self.get_text_size(text, font, fontsize, font_kwargs)
-        text_position = (rect.left + (rect.width - text_width) // 2, rect.top + (rect.height - text_height) // 2)
-        self.draw_text(text, text_position, font, fontsize, color, font_kwargs, render_kwargs)
