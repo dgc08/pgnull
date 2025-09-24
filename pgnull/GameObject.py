@@ -62,6 +62,9 @@ class GameObject():
 
         self.add_game_object(game_obj)
 
+        # so you can directly chain some assignment etc
+        return game_obj
+
     def register_event(self, event: str, event_runnable):
         if not callable(event_runnable):
             raise TypeError("event_runnable isn't callable (It needs to be a reference to a function that can be executed)")

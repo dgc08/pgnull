@@ -4,8 +4,8 @@ import pygame.font
 from pygame import draw
 
 class Screen:
-    def __init__(self, WIDTH, HEIGHT, caption):
-        self.pygame_obj = display.set_mode((WIDTH, HEIGHT))
+    def __init__(self, WIDTH, HEIGHT, caption, *args, **kwargs):
+        self.pygame_obj = display.set_mode((WIDTH, HEIGHT), *args, **kwargs)
         display.set_caption(caption)
 
         self.fill = self.pygame_obj.fill

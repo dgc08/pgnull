@@ -1,5 +1,6 @@
 glob_singleton = {}
 
+from pygame.math import clamp, Vector2
 from .Keyboard import Keyboard
 
 keys = Keyboard.get_key_list()
@@ -13,6 +14,8 @@ class Game_Context:
         self.events = events
         self.keyboard = keys
 
+        self.mouse_rel = (0,0)
+
         self.event_args = {
             "on_key_down"  : None,
             "on_key_up"    : None,
@@ -21,3 +24,7 @@ class Game_Context:
             "on_mouse_move": None,
             "on_close": None
         }
+
+
+def clamp_vector(orig, minv, maxv=Vector2(float("inf"), float("inf"))):
+    return (clamp(orig.x, minv.x, maxv.x), clamp(orig.y, minv.y, maxv.y))

@@ -13,8 +13,9 @@ from .Game import Game
 from .GameObject import GameObject
 
 class Box(GameObject, Rect):
-    def __init__(self, pos:Vector2, size:Vector2=None, color=None):
+    def __init__(self, pos:Vector2, size:Vector2=None, color=None, outline=0):
         self.color = color
+        self.outline = outline
 
         GameObject.__init__(self)
 
@@ -32,8 +33,18 @@ class Box(GameObject, Rect):
 
     def on_draw(self, ctx):
         if self.color:
-            draw.rect(Game.get_game().screen.pygame_obj, self.color, self)
+            draw.rect(Game.get_game().screen.pygame_obj, self.color, self, self.outline)
 
+        for event in ctx.events:
+            if event.type == MOUSEBUTTONDOWN:
+                pos = mouse.get_pos()
+                button = event.button
+
+                if button == 1 and self.collidepoint(pos):
+                    self.on_click()
+
+    def on_click(self):
+        pass
 
 class TextBox(GameObject):
     def __init__(self, text, pos:Vector2=None, size=None, color=None, topleft=None, fontsize=32, font=None, line_gap=3, text_color=(0, 0, 0), font_kwargs={}, render_kwargs={}):
@@ -50,7 +61,7 @@ class TextBox(GameObject):
             self.box_topleft = None
             super().__init__() # because this resets the position
             self.pos = pos
-        
+
         self.text = text
         self.text_color = text_color
 

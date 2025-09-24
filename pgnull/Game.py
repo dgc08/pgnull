@@ -24,11 +24,11 @@ class Game:
 
         self.__running = False
 
-    def init_screen(self, WIDTH, HEIGHT, caption="pgnull game"):
+    def init_screen(self, WIDTH, HEIGHT, caption="pgnull game", *args, **kwargs):
         self.pygame_available = True
         pygame.init()
 
-        self.screen = Screen(WIDTH, HEIGHT, caption)
+        self.screen = Screen(WIDTH, HEIGHT, caption, *args, **kwargs)
         self.clock = Clock()
         self.keyboard = Keyboard()
 
@@ -54,7 +54,8 @@ class Game:
                 events = pygame.event.get()
 
                 ctx = utils.Game_Context(events, self.keyboard)
-            
+                ctx.mouse_rel = pygame.mouse.get_rel()
+
                 for event in events:
                     if event.type == pygame.KEYDOWN:
                         key = pygame.key.name(event.key).lower()
