@@ -55,16 +55,19 @@ class Game:
 
                 ctx = utils.Game_Context(events, self.keyboard)
                 ctx.mouse_rel = pygame.mouse.get_rel()
+                ctx.mouse_pos = pygame.mouse.get_pos()
+                for i, button in enumerate(pygame.mouse.get_pressed()):
+                    ctx.mouse[i] = button
 
                 for event in events:
                     if event.type == pygame.KEYDOWN:
                         key = pygame.key.name(event.key).lower()
                         self.keyboard.set_key(key, True)
-                        ctx.event_args["on_key_down"] = (event.key, )
+                        ctx.event_args["on_key_down"] = (key, event.key)
                     elif event.type == pygame.KEYUP:
                         key = pygame.key.name(event.key).lower()
                         self.keyboard.set_key(key, False)
-                        ctx.event_args["on_key_up"] = (event.key, )
+                        ctx.event_args["on_key_up"] = (key, event.key)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         mouse_pos = pygame.mouse.get_pos()
                         ctx.event_args["on_mouse_down"] = (mouse_pos, event.button)

@@ -13,7 +13,7 @@ from .Game import Game
 from .GameObject import GameObject
 
 class Box(GameObject, Rect):
-    def __init__(self, pos:Vector2, size:Vector2=None, color=None, outline=0):
+    def __init__(self, pos:Vector2=(0,0), size:Vector2=None, color=None, outline=0, topleft=None):
         self.color = color
         self.outline = outline
 
@@ -23,6 +23,9 @@ class Box(GameObject, Rect):
             Rect.__init__(self, *pos, *size)
         else:
             Rect.__init__(self, pos, (0,0))
+
+        if topleft:
+            self.topleft=topleft
 
     @property
     def pos(self) -> Vector2:

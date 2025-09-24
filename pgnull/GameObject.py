@@ -25,10 +25,10 @@ class GameObject():
     def on_mouse_move(self, pos, rel, buttons):
         pass
 
-    def on_key_down(self, key):
+    def on_key_down(self, key, key_code):
         pass
 
-    def on_key_up(self, key):
+    def on_key_up(self, key, key_code):
         pass
 
     def __init__(self):
@@ -37,6 +37,7 @@ class GameObject():
         self._name_map = {}
 
         self.pos = Vector2(0,0)
+        self.last_draw_pos = Vector2(0,0)
         if not hasattr(self, "height"):
             self.height = 0
             self.width = 0
@@ -95,6 +96,7 @@ class GameObject():
 
     def do_draw(self, ctx):
         # draw is same as update, just later and the GameObjects offset the pos of their children according to their own pos
+        self.last_draw_pos = (self.pos.x, self.pos.y)
         if self.bg_color:
             # in case there is a background color set
             # please do only use this for one scene in the tree

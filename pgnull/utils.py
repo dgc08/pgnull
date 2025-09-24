@@ -13,6 +13,7 @@ class Game_Context:
     def __init__(self, events, keys):
         self.events = events
         self.keyboard = keys
+        self.mouse = [False, False, False, False, False]
 
         self.mouse_rel = (0,0)
 

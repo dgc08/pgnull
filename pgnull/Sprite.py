@@ -8,7 +8,7 @@ from .Game import Game
 from .GameObject import GameObject
 
 class Sprite(GameObject, pygame_sprite):
-    def __init__(self, image_path, pos=None, scale=(1,1), angle=0, pivot=(0,0)):
+    def __init__(self, image_path, pos=None, scale=(1,1), angle=0, pivot=(0,0), tile=False):
 
         # load image and rect before super().__init__, because GameObject.__init__() sets the position to zero,
         # which links back to self.rect and causes an AttributeError otherwise
@@ -24,6 +24,7 @@ class Sprite(GameObject, pygame_sprite):
         self.__angle = angle
         self.scale = scale
         self.rotation = angle
+        self.tile = tile
 
         if pos:
             self.pos = Vector2(pos)
@@ -108,8 +109,18 @@ class Sprite(GameObject, pygame_sprite):
     def on_draw(self, ctx):
         # check for click on draw, to get offseted position for click checking
         self.check_for_click(ctx)
+        screen = Game.get_game().screen
+        if self.tile:
+            screen_w, screen_h = screen.pygame_obj.get_size()
+            img_w, img_h = self.image.get_size()
+            offset_x = self.rect.x % img_w
+            offset_y = self.rect.y % img_h
 
-        Game.get_game().screen.blit(self.image, self.rect)
+            for x in range(offset_x-img_w, screen_w*2, img_w):
+                for y in range(offset_y-img_h, screen_h*2, img_h):
+                    screen.blit(self.image, (x, y))
+        else:
+            screen.blit(self.image, self.rect)
 
     def check_for_click(self, ctx):
         for event in ctx.events:
